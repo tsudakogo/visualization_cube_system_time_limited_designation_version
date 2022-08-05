@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>システムA</title>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.21.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.2"></script>
+    <script src="https://unpkg.com/three@0.131.3/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.131.3/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/three@0.131.3/examples/fonts/helvetiker_regular.typeface.json"></script>
+    <style media="screen">
+      .parent {width: 1900px;height: 100vh;background: #ffffff;position: relative; top:0px; left:0px}
+      input{width:105px;height:20px; z-index:110}
+      select{width:105px; height:20px; z-index:100}
+      #myCanvas{position:absolute; left:200px; top:50px; z-index:50}
+      #myCanvas2{position:absolute; left:1045px; top:50px; z-index:50}
+
+      /* #myCanvas3{position:fixed; right:280px; bottom:0; z-index:50}
+      #myCanvas4{position:fixed; right:30px; bottom:0; z-index:50} */
+      #cube{position:fixed; right:50px; bottom:0; z-index:50;border: 3px groove #d3d3d3;}
+
+
+      #selectdata{position:absolute; left:350px; top:350px}
+      #Start{position: absolute; left:457px; top:350px}
+
+      #startmonth{position: absolute;left:50px; top:350px}
+      #to{position: absolute; left:175px; top:335px}
+      #endmonth{position: absolute; left:230px; top:350px}
+
+      #Reset{position: absolute; left:1315px; top:350px}
+      #id_form{position: absolute; left:1430px; top:350px}
+      #Tdrillup{position: absolute; left:45px; top:195px}
+      #Tdrilldown{position: absolute; left:150px; top:195px}
+      #Adrillup{position: absolute; left:500px; top:195px}
+      #Adrill1{position: absolute; left:607px; top:195px}
+      #Adrill2{position: absolute; left:1452px; top:195px}
+      #Adrilldown{position: absolute; left:714px; top:195px}
+      #comparedata{position: absolute; left:1315px; top:35px}
+      #Adddata{position: absolute; left:1422px; top:35px}
+      #compareselect2{position: absolute; left:607px; top:220px}
+      #compare{position: absolute; left:714px; top:220px}
+      #Spin{position: absolute; left:772.5px; top:350px}
+      #transition{position: absolute; left:430px; top:50px}
+      #Transition{position: absolute; left:537px; top:50px}
+      #Tdrillup2{position: absolute; left:890px; top:195px}
+      #Tdrilldown2{position: absolute; left:995px; top:195px}
+      #Adrillup2{position: absolute; left:1345px; top:195px}
+      #Adrilldown2{position: absolute; left:1559px; top:195px}
+      #compareselect4{position: absolute; left:1452px; top:220px}
+      #compare2{position: absolute; left:1559px; top:220px}
+      #vis{position: absolute; left:10px; top:450px; overflow:auto; width:75vw; height:100vw}
+      .vega-actions a {margin-rightz: 5px;}
+
+      #help{position: absolute; left:1600px; top:50px}
+      #help2{position: absolute; left:1600px; top:70px}
+      #help3{position: absolute; left:1600px; top:90px}
+
+      #removedata{position: absolute; left:1315px; top:60px}
+      #Removedata{position: absolute; left:1422px; top:60px}
+
+      .help_icon {position:absolute; left:565px; top:350px;z-index:210;
+                  border-radius:50%;width:20px;height:20px;line-height:25px;
+                  vertical-align:middle;font-size:20px;text-align:center;
+                  background-color:#888888;color:white;cursor:pointer;}
+      .tooltip {position:absolute; left:572px; top:357px;z-index:210;
+                background-color:rgba(0,0,0,0.5);;color:white;
+                border-radius:0.3em;padding:0.3em;margin:0.3em 0 0 1em;
+                display:none;}
+    </style>
+		<script>
+      let dataset_ja=[];
+      let dataset=[];
+      let dset=[];
+      let dset_ja=[];
+      let MainArea=[];
+      let CompareArea=[];
+      let Atmp=[];
+      let ARtmp=[];
+      let AJtmp=[];
+      let transformequal=[];
+      let xtypename;
+      let yfieldline=[];
+      let MainData=[];
+      let AddData=[];
+      let logcount=0;
+      let flag=0;
+      let type=0;
+      let masterData = [];
+      let now = new Date();
+      let data=[];
+      let statisticaldata=[];
+      let mset=[];
+      let mset_ja=[];
+      let markset=[];
+      let markset_ja=[];
+
+      let cubewidth=300;
+      let cubeheight=300;
+
+      let cubewidthbig=250;
+      let cubeheightbig=250;
+
+      let canvasElement1;
+      let renderer1;
+      let scene1;
+      let camera1;
+      let controls1;
+      let loader1 = new THREE.FontLoader();
+      let materialaxis1;
+      let axispoints1;
+      let geometryaxis1;
+      let lineaxis1;
+      let geometry1;
+      let cube_material1;
+      let cube1;
+      let lineedges1;
+      let line1;
+      let cubearray1=[];
+      let xcoordinate1;
+      let ycoordinate1;
+      let zcoordinate1;
+      let xtrendcube1;
+      let ytrendcube1=0;
+      let ztrendcube1;
+      let canvasElement2;
+      let renderer2;
+      let scene2;
+      let camera2;
+      let controls2;
+      let geometry2;
+      let cube_material2;
+      let cube2;
+      let lineedges2;
+      let line2;
+      let cubearray2=[];
+      let xcoordinate2;
+      let ycoordinate2;
+      let zcoordinate2;
+      let timelabel;
+      let arealabel=[];
+      let sdlabel=[];
+      let viewlabel=[];
+
+      let ViewQty=0;
+      let AreaQty=0;
+      let TimeQty=0;
+      let SDQty=0;
+      let trendcube=0;
+
+
+      let canvasElement3;
+      let renderer3;
+      let scene3;
+      let camera3;
+      let controls3;
+
+      let canvasElement4;
+      let renderer4;
+      let scene4;
+      let camera4;
+      let controls4;
+
+      let startedit=[]; ////////////////////////////////////////////////////////
+      let endedit=[];  ////////////////////////////////////////////////////////
+
+		</script>
+    <script src="./src/vegalite.js"></script>
+    <script src="./src/visualization_cube.js"></script>
+    <script src="./src/visualization_cube_system.js"></script>
+    <script>
+    window.addEventListener('load', Startbuttonselect);
+    // window.addEventListener('load', init);
+
+  function init(){
+    dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    MainArea=["Japan"];
+    xtypename="monthyear";
+    MainData=["pcr_positive"];
+    dset_ja=["陽性者数","陽性者数累計","死者数","死者数累計","ワクチン1回目","ワクチン2回目","重症者数"];
+    dset=["pcr_positive","pcr_positive_total","dead","dead_total","vaccine_status1","vaccine_status2","severe"];
+    flag=0;
+    type=4;
+    CompareArea=[]
+    AFlag=0;
+    Atmp=[];
+    Atmpnum=0;
+    ARFlag=0;
+    ARtmpnum=0;
+    ARtmp=[];
+    AJFlag=0;
+    AJtmpnum=0;
+    AJtmp=[];
+    AddData=[];
+    Arealevel="Japan";
+
+
+    startedit=["2021","05"]
+    endedit=["2021","06"]
+
+    cubearray1=[];
+    cubearray2=[];
+    AreaQty=1;
+    TimeQty=1;
+    ViewQty=6;
+    SDQty=1;
+    ytrendcube1=2;
+
+
+    DataJoinArray();
+    AreaJoinArray();
+
+    setCube();
+    setCubelabel();
+
+    Setbutton();
+    Setselect();
+
+    visualize();
+    Create();
+  }
+
+
+    function getbuttonvalue(id) {
+      if(document.getElementById(id.id).value==="Start"){
+        St();
+
+        setCube();
+        setCubelabel();
+
+        Setbutton();
+        Setselect();
+
+        Collectlog("Start",selectdatastr);
+      }else if(document.getElementById(id.id).value==="Spin"){
+        Sp();
+
+        // spindeletecoordinate();
+        SpinLabel();
+
+        setTransitionselect();
+
+        if(flag===0){
+          Collectlog("spin","area");
+        }else{
+          Collectlog("spin","time");
+        }
+      }else if(document.getElementById(id.id).value==="Drill up(time)"){
+        TDU();
+
+        // Tdrillupdowncoordinate();
+        TDUTDDLabel();
+        SpinLabel();
+
+        setTransitionselect();
+        Tdrillupdown();
+
+        Collectlog("drilluptime",xtypename);
+      }else if(document.getElementById(id.id).value==="Drill down(time)"){
+        TDD();
+
+        // Tdrillupdowncoordinate();
+        TDUTDDLabel();
+        SpinLabel();
+
+        setTransitionselect();
+        Tdrillupdown();
+
+        Collectlog("drilldowntime",xtypename);
+      }else if(document.getElementById(id.id).value==="Drill up(area)"){
+        ADU();
+        CompareAreaOperate();
+        AreaJoinArray();
+
+        ADUADDComLabel();
+
+        Adrillupdown();
+        Compareselect();
+
+        Collectlog("drilluparea",MainArea);
+      }else if(document.getElementById(id.id).value==="Drill down(area)"){
+        if(id.id=="Adrilldown"){
+          Adrill1();
+        }else{
+          Adrill2();
+        }
+        CompareAreaOperate();
+        AreaJoinArray();
+
+        ADUADDComLabel();
+
+        Adrillupdown();
+        Compareselect();
+
+        Collectlog("drilldownarea",MainArea);
+      }else if(document.getElementById(id.id).value==="Compare"){
+        if(id.id=="compare"){
+          com1();
+        }else{
+          com2();
+        }
+        AreaJoinArray();
+
+        caddcoordinate();
+        ADUADDComLabel();
+
+        Compareselect();
+
+        Collectlog("compare",comparestr);
+      }else if(document.getElementById(id.id).value==="Add data"){
+        Comparedata();
+        DataJoinArray();
+
+        adaddcoordinate();
+        AdRdLabel();
+
+        Removeselect();
+        Comparedataselect();
+
+        Collectlog("Adddata",comparedatastr);
+      }else if(document.getElementById(id.id).value==="Transition"){
+        Trans();
+
+        transitioncoordinate();
+
+        setTransitionselect();
+        Tdrillupdown();
+        Spinbutton();
+
+        if(type==0){
+          Collectlog("transition","line");
+        }else if(type==1){
+          Collectlog("transition","map");
+        }else if(type==2){
+          Collectlog("transition","bar");
+        }else if(type==3){
+          Collectlog("transition","pie");
+        }else if(type==4){
+          Collectlog("transition","area");
+        }else if(type==5){
+          Collectlog("transition","point");
+        }
+      }else if(document.getElementById(id.id).value==="Remove data"){
+        RemoveData();
+
+        rdatacoordinate();
+        AdRdLabel();
+
+
+        RemovebottonView();
+        Removeselect();
+        DataJoinArray();
+
+        Collectlog("RemoveData",rselectstr);
+      }else{
+        Re();
+
+        Collectlog("Reset","");
+      }
+      visualize();
+      Create();
+    }
+
+  </script>
+  </head>
+  <body>
+    <div class="parent">
+      <canvas id="myCanvas"></canvas>
+      <canvas id="myCanvas2" ></canvas><br/>
+
+      <div id="cube">
+        <canvas id="myCanvas3"></canvas>
+        <canvas id="myCanvas4"></canvas>
+      </div>
+
+      <input id="Start" type="submit" value="Start" onclick="getbuttonvalue(Start);" title="可視化する統計データを選択する"><br/>
+
+      <input type="month" id="startmonth" name="月日から" value="2020-01" min="2020-01" max="2021-07" /><br>
+      <p id="to">から</p>
+      <input type="month" id="endmonth" name="月日まで" value="2020-01" min="2020-01" max="2021-07" /><br>
+
+      <input id="Spin" type="button" value="Spin" onclick="getbuttonvalue(Spin);" title="動向軸を入れ替える"/><br/>
+      <input id="Tdrillup" type="submit" value="Drill up(time)" onclick="getbuttonvalue(Tdrillup);" title="統計データの時間的粒度を大きくする"/>
+      <input id="Tdrillup2" type="submit" value="Drill up(time)" onclick="getbuttonvalue(Tdrillup2);" title="統計データの時間的粒度を大きくする"/>
+      <input id="Tdrilldown" type="submit" value="Drill down(time)" onclick="getbuttonvalue(Tdrilldown);" title="統計データの時間的粒度を小さくする"/><br/>
+      <input id="Tdrilldown2" type="submit" value="Drill down(time)" onclick="getbuttonvalue(Tdrilldown2);" title="統計データの時間的粒度を小さくする"/><br/>
+      <input id="Adrillup" type="submit" value="Drill up(area)" onclick="getbuttonvalue(Adrillup);" title="統計データの空間的粒度を大きくする"/><br/>
+      <input id="Adrillup2" type="submit" value="Drill up(area)" onclick="getbuttonvalue(Adrillup2);" title="統計データの空間的粒度を大きくする"/><br/>
+      <input id="Adrilldown" type="submit" value="Drill down(area)" onclick="getbuttonvalue(Adrilldown);" title="統計データの空間的粒度を小さくする"/><br/>
+      <input id="Adrilldown2" type="submit" value="Drill down(area)" onclick="getbuttonvalue(Adrilldown2);" title="統計データの空間的粒度を小さくする"/><br/>
+      <input id="compare" type="submit" value="Compare" onclick="getbuttonvalue(compare);" title="空間軸へデータを追加する"/><br/>
+      <input id="compare2" type="submit" value="Compare" onclick="getbuttonvalue(compare2);" title="空間軸へデータを追加する"/><br/>
+      <input id="Adddata" type="submit" value="Add data" onclick="getbuttonvalue(Adddata);" title="統計データ軸へデータを追加する"/>
+      <input id="Transition" type="button" value="Transition" onclick="getbuttonvalue(Transition);" title="可視化表現を切り替る"/><br/>
+      <input id ="Removedata" type="button" value="Remove data" onclick="getbuttonvalue(Removedata)"/>
+      <input id="Reset" type="button" value="Reset" onclick="getbuttonvalue(Reset)" title="すべての操作をリセットする"><br/>
+      <form name="formname" id="id_form" action="">
+        <a id="createFile" href="#" download="log.json" value="ファイル作成" onclick="publish()" title="操作ログをjson形式でダウンロードする">操作ログ取得</a>
+      </form>
+      <form name="form1">
+        <select id="selectdata" name="selectdata">
+          <option value="pcr_positive">陽性者数</option>
+          <option value="pcr_positive_total">陽性者数累計</option>
+          <option value="dead">死者数</option>
+          <option value="dead_total">死者数累計</option>
+          <option value="vaccine_status1">ワクチン1回目</option>
+          <option value="vaccine_status2">ワクチン2回目</option>
+          <option value="severe">重症者数</option>
+        </select>
+        <select id="comparedata" name="comparedata">
+        </select>
+      </form>
+      <form id="form7" name="form7">
+        <select id="removedata" name="removedata">
+        </select>
+      </form>
+      <form id="form2" name="form2">
+        <select id="Adrill1" name = "Adrill1">
+        </select>
+      </form>
+      <form id="form5" name="form5">
+        <select id="Adrill2" name = "Adrill2">
+        </select>
+      </form>
+      <form id="form3" name="form3">
+        <select id="compareselect2" name = "compareselect2">
+          <optgroup label="日本">
+            <option value = "Japan">日本</option>
+          </optgroup>
+          <optgroup label="地方別">
+            <option value = "HokkaiDo" selected>北海道地方</option>
+            <option value = "Tohoku">東北地方</option>
+            <option value = "Kanto">関東地方</option>
+            <option value = "Chubu">中部地方</option>
+            <option value = "Kinki">近畿地方</option>
+            <option value = "Chugoku">中国地方</option>
+            <option value = "Shikoku">四国地方</option>
+            <option value = "Kyushu">九州地方</option>
+          </optgroup>
+          <optgroup label="都道府県別">
+            <option value = "Hokkai Do">北海道地方</option>
+            <option value = "Aomori Ken">東北地方</option>
+            <option value = "Ibaraki Ken">関東地方</option>
+            <option value = "Niigata Ken">中部地方</option>
+            <option value = "Mie Ken">近畿地方</option>
+            <option value = "Shimane Ken">中国地方</option>
+            <option value = "Kagawa Ken">四国地方</option>
+            <option value = "Fukuoka Ken">九州地方</option>
+          </optgroup>
+        </select>
+      </form>
+      <form id="form6" name="form6">
+        <select id="compareselect4" name = "compareselect4">
+          <optgroup label="日本">
+            <option value = "Japan">日本</option>
+          </optgroup>
+          <optgroup label="地方別">
+            <option value = "HokkaiDo" selected>北海道地方</option>
+            <option value = "Tohoku">東北地方</option>
+            <option value = "Kanto">関東地方</option>
+            <option value = "Chubu">中部地方</option>
+            <option value = "Kinki">近畿地方</option>
+            <option value = "Chugoku">中国地方</option>
+            <option value = "Shikoku">四国地方</option>
+            <option value = "Kyushu">九州地方</option>
+          </optgroup>
+          <optgroup label="都道府県別">
+            <option value = "Hokkai Do">北海道地方</option>
+            <option value = "Aomori Ken">東北地方</option>
+            <option value = "Ibaraki Ken">関東地方</option>
+            <option value = "Niigata Ken">中部地方</option>
+            <option value = "Mie Ken">近畿地方</option>
+            <option value = "Shimane Ken">中国地方</option>
+            <option value = "Kagawa Ken">四国地方</option>
+            <option value = "Fukuoka Ken">九州地方</option>
+          </optgroup>
+        </select>
+      </form>
+      <form id="form4" name="form4">
+          <select id="transition" name="transition">
+          </select>
+      </form>
+			<form name="help" id="help">
+				<a href="./src/explanation_visualization_cube.html" target="_blank">可視化キューブの説明</a>
+			</form>
+			<form name="help2" id="help2">
+				<a href="./src/explanation_statistical_data.html" target="_blank">統計データの情報</a>
+			</form>
+      <form name="help3" id="help3">
+				<a href="./src/explanation_each_button.html" target="_blank">各ボタンの説明</a>
+			</form>
+      <div class="help_area" id="help_area">
+        <div id="help_icon" class="help_icon">?</div>
+        <div class="tooltip">
+          可視化したい統計データを選択肢して<br/>
+          Startボタンを押す<br/>
+        </div>
+      </div>
+      <div id="vis"></div>
+    </div>
+    <script>
+      document.querySelectorAll('.help_icon').forEach (elm => {
+        elm.onclick = function () {
+          event.stopPropagation();
+          let tooltip = this.parentNode.querySelector('.tooltip');
+          if (tooltip.style.display == 'block') {
+            tooltip.style.display = 'none';
+          } else {
+            tooltip.style.display = 'block';
+          }
+        };
+      });
+      document.body.onclick = function () {
+        document.querySelectorAll('.tooltip').forEach (tooltip => {
+          tooltip.style.display = 'none';
+        });
+      };
+    </script>
+  </body>
+  </html>
