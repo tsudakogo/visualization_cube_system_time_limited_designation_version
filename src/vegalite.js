@@ -1,771 +1,1206 @@
-function setCube(){
-  cubearray1=[];
-  cubearray2=[];
-  AreaQty=1;
-  TimeQty=1;
-  ViewQty=6;
-  SDQty=1;
-  ytrendcube1=2;
+function St(){
+  const selectdata1 = document.form1.selectdata;
+  const selectdatanum = selectdata1.selectedIndex;
+  selectdatastr = selectdata1.options[selectdatanum].value;
+
+  const startmonth = document.getElementById("startmonth").value; /////////////////////////////////////////////////////////////
+  startedit=startmonth.split("-") /////////////////////////////////////////////////////////////
+  const endmonth = document.getElementById("endmonth").value; /////////////////////////////////////////////////////////////
+  endedit=endmonth.split("-") /////////////////////////////////////////////////////////////
+
+  set(selectdatastr);
+  DataJoinArray();
+  AreaJoinArray();
 }
-function setCubelabel(){
-  timelabel="month"
-
-  Mainarealabel=[];
-  Comparearealabel=[];
-  arealabel=[];
-  arealabel=CreateArealabel();
-
-  viewlabel=["line","map","bar","pie","area","point"];
-  sdlabel=yfieldline;
+function set(selectdatastr){
+    dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    MainArea=["Japan"];
+    xtypename="monthyear";
+    MainData=[selectdatastr];
+    dset_ja=["陽性者数","陽性者数累計","死者数","死者数累計","ワクチン1回目","ワクチン2回目","重症者数"];
+    dset=["pcr_positive","pcr_positive_total","dead","dead_total","vaccine_status1","vaccine_status2","severe"];
+    flag=0;
+    type=2;
+    CompareArea=[]
+    AFlag=0;
+    Atmp=[];
+    Atmpnum=0;
+    ARFlag=0;
+    ARtmpnum=0;
+    ARtmp=[];
+    AJFlag=0;
+    AJtmpnum=0;
+    AJtmp=[];
+    AddData=[];
+    Arealevel="Japan";
 }
-function tick1(){
-  renderer1.render(scene1, camera1);
-  requestAnimationFrame(tick1);
-}
-function tick2(){
-  renderer2.render(scene2, camera2);
-  requestAnimationFrame(tick2);
-}
-
-function tick3(){ //////// カメラをマウスでコントロールするために必要なもの
-  camera3.lookAt(new THREE.Vector3(-15, 0, -15));
-  renderer3.render(scene3, camera3);
-  requestAnimationFrame(tick3);
-}
-function tick4(){ //////// カメラをマウスでコントロールするために必要なもの
-    camera4.lookAt(new THREE.Vector3(-15, 0, -15));
-  renderer4.render(scene4, camera4);
-  requestAnimationFrame(tick4);
-}
-
-function CreateCoordinateView(x,y,z,trendcube){
-  let cubearray=[];
-
-  for(let i=0;i<y;i++){
-      cubearray.splice(1,0,[[1,1]])
-  }
-
-  if(x>=z){
-      for(let i=0;i<x;i++){
-          for(let j=0;j<z;j++){
-              if(i!=0 || j!=0){
-                  let tmp1=cubearray.splice(trendcube,1);
-                  // tmp1=tmp1[0].concat([[2*i+1,2*j+1]]);
-                  tmp1=tmp1[0].concat([[1,1]]);
-                  cubearray.splice(trendcube,0,tmp1)
-              }
-          }
-      }
-  }else{
-      for(let i=0;i<z;i++){
-          for(let j=0;j<x;j++){
-            if(i!=0 || j!=0){
-                let tmp1=cubearray.splice(trendcube,1);
-                // tmp1=tmp1[0].concat([[2*j+1,2*i+1]]);
-                tmp1=tmp1[0].concat([[1,1]]);
-                cubearray.splice(trendcube,0,tmp1)
-            }
-          }
-      }
-  }
-
-  return cubearray
-}
-function CreateCoordinate(x,y,z,trendcube){
-  let cubearray=[];
-
-  for(let i=0;i<y;i++){
-      cubearray.splice(1,0,[[1,1]])
-  }
-
-  if(x>=z){
-    for(let k=0;k<y;k++){
-      for(let i=0;i<x;i++){
-          for(let j=0;j<z;j++){
-              if(i!=0 || j!=0){
-                let tmp1=cubearray.splice(k,1);
-                // tmp1=tmp1[0].concat([[2*i+1,2*j+1]]);
-                tmp1=tmp1[0].concat([[1,1]]);
-                cubearray.splice(k,0,tmp1)
-              }
-          }
-      }
-    }
-  }else{
-      for(let i=0;i<z;i++){
-          for(let j=0;j<x;j++){
-            if(i!=0 || j!=0){
-                let tmp1=cubearray.splice(trendcube,1);
-                // tmp1=tmp1[0].concat([[2*j+1,2*i+1]]);
-                tmp1=tmp1[0].concat([[1,1]]);
-                cubearray.splice(trendcube,0,tmp1)
-            }
-          }
-      }
-  }
-
-  return cubearray
-}
-function DrawAxis(){
-  const lineAxis1 = new THREE.AxesHelper(30);
-  lineAxis1.setColors(0x000000,0x000000,0x000000);
-  scene1.add(lineAxis1);
-
-  const lineAxis2 = new THREE.AxesHelper(30);
-  lineAxis2.setColors(0x000000,0x000000,0x000000);
-  scene2.add( lineAxis2 );
-
-  const lineAxis3 = new THREE.AxesHelper(30);
-  lineAxis3.setColors(0x000000,0x000000,0x000000);
-  scene3.add(lineAxis3);
-
-  const lineAxis4 = new THREE.AxesHelper(30);
-  lineAxis4.setColors(0x000000,0x000000,0x000000);
-  scene4.add(lineAxis4);
-
-  let TimeLabelcolor;
-  let AreaLabelcolor;
-
-  if(flag==0){
-    AreaLabelcolor=0xdc143c;
-    TimeLabelcolor=0x000000;
-  }else{
-    AreaLabelcolor=0x000000;
-    TimeLabelcolor=0xdc143c;
-  }
-
-  loader1.load('https://unpkg.com/three@0.131.3/examples/fonts/helvetiker_regular.typeface.json', function(font1){
-    var xaxistextGeometry = new THREE.TextGeometry("Area", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var xaxismaterials = new THREE.MeshBasicMaterial( { color: AreaLabelcolor } );
-    var xaxistextMesh = new THREE.Mesh(xaxistextGeometry, xaxismaterials);
-    xaxistextMesh.position.set(5,0.5,0);
-    xaxistextMesh.quaternion.copy( camera1.quaternion );
-    scene1.add(xaxistextMesh);
-    var yaxistextGeometry = new THREE.TextGeometry("Type of view", {font: font1,size: 0.4,curveSegments: 20,height: 0});
-    var yaxismaterials = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-    var yaxistextMesh = new THREE.Mesh(yaxistextGeometry, yaxismaterials);
-    yaxistextMesh.position.set(2.7,5,0);
-    yaxistextMesh.quaternion.copy( camera1.quaternion );
-    scene1.add(yaxistextMesh);
-    var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
-    var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
-    zaxistextMesh.quaternion.copy( camera1.quaternion );
-    scene1.add(zaxistextMesh);
-
-    var xaxistextGeometry = new THREE.TextGeometry("Area", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var xaxismaterials = new THREE.MeshBasicMaterial( { color: AreaLabelcolor } );
-    var xaxistextMesh = new THREE.Mesh(xaxistextGeometry, xaxismaterials);
-    xaxistextMesh.position.set(5,0.5,0);
-    xaxistextMesh.quaternion.copy( camera2.quaternion );
-    scene2.add(xaxistextMesh);
-    var yaxistextGeometry = new THREE.TextGeometry("Statistical data", {font: font1,size: 0.4,curveSegments: 20,height: 0});
-    var yaxismaterials = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-    var yaxistextMesh = new THREE.Mesh(yaxistextGeometry, yaxismaterials);
-    yaxistextMesh.position.set(2.4,5,0);
-    yaxistextMesh.quaternion.copy( camera2.quaternion );
-    scene2.add(yaxistextMesh);
-    var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
-    var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
-    zaxistextMesh.quaternion.copy( camera2.quaternion );
-    scene2.add(zaxistextMesh);
-
-    var xaxistextGeometry = new THREE.TextGeometry("Area", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var xaxismaterials = new THREE.MeshBasicMaterial( { color: AreaLabelcolor } );
-    var xaxistextMesh = new THREE.Mesh(xaxistextGeometry, xaxismaterials);
-    xaxistextMesh.position.set(5,0.5,0);
-    xaxistextMesh.quaternion.copy( camera3.quaternion );
-    scene3.add(xaxistextMesh);
-    var yaxistextGeometry = new THREE.TextGeometry("Type of view", {font: font1,size: 0.4,curveSegments: 20,height: 0});
-    var yaxismaterials = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-    var yaxistextMesh = new THREE.Mesh(yaxistextGeometry, yaxismaterials);
-    yaxistextMesh.position.set(2.7,5,0);
-    yaxistextMesh.quaternion.copy( camera3.quaternion );
-    scene3.add(yaxistextMesh);
-    var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
-    var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
-    zaxistextMesh.quaternion.copy( camera3.quaternion );
-    scene3.add(zaxistextMesh);
-    var xaxistextGeometry = new THREE.TextGeometry("Area", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var xaxismaterials = new THREE.MeshBasicMaterial( { color: AreaLabelcolor } );
-    var xaxistextMesh = new THREE.Mesh(xaxistextGeometry, xaxismaterials);
-    xaxistextMesh.position.set(5,0.5,0);
-    xaxistextMesh.quaternion.copy( camera4.quaternion );
-    scene4.add(xaxistextMesh);
-    var yaxistextGeometry = new THREE.TextGeometry("Statistical data", {font: font1,size: 0.4,curveSegments: 20,height: 0});
-    var yaxismaterials = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-    var yaxistextMesh = new THREE.Mesh(yaxistextGeometry, yaxismaterials);
-    yaxistextMesh.position.set(2.4,5,0);
-    yaxistextMesh.quaternion.copy( camera4.quaternion );
-    scene4.add(yaxistextMesh);
-    var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
-    var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
-    var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
-    zaxistextMesh.quaternion.copy( camera4.quaternion );
-    scene4.add(zaxistextMesh);
-  });
-}
-function Create(){
-  canvasElement1 = document.getElementById('myCanvas');
-  renderer1 = new THREE.WebGLRenderer({canvas: canvasElement1,alpha: true});
-  renderer1.setPixelRatio(window.devicePixelRatio);
-  renderer1.setSize(cubewidth, cubeheight);
-  renderer1.setClearColor( 0xffffff, 0 );
-  scene1 = new THREE.Scene();
-  camera1 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera1.position.set(10, 10, 10);
-  camera1.lookAt(new THREE.Vector3(0, 0, 0));
-  controls1 = new THREE.OrbitControls(camera1, canvasElement1);
-
-  canvasElement2 = document.getElementById('myCanvas2');
-  renderer2 = new THREE.WebGLRenderer({canvas: canvasElement2,alpha: true});
-  renderer2.setPixelRatio(window.devicePixelRatio);
-  renderer2.setSize(cubewidth, cubeheight);
-  renderer2.setClearColor( 0xffffff, 0 );
-  scene2 = new THREE.Scene();
-  camera2 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera2.position.set(10, 10, 10);
-  camera2.lookAt(new THREE.Vector3(0, 0, 0));
-  controls2 = new THREE.OrbitControls(camera2, canvasElement2);
-
-  canvasElement3 = document.getElementById('myCanvas3');
-  renderer3 = new THREE.WebGLRenderer({canvas: canvasElement3,alpha: true});
-  renderer3.setPixelRatio(window.devicePixelRatio);
-  renderer3.setSize(cubewidthbig, cubeheightbig);
-  renderer3.setClearColor( 0xffffff, 0 );
-  scene3 = new THREE.Scene();
-  camera3 = new THREE.PerspectiveCamera(40, cubewidthbig / cubeheightbig,1,1000);
-  camera3.position.set(55, 55, 55);
-  camera3.lookAt(new THREE.Vector3(0, 0, 0));
-  controls3 = new THREE.OrbitControls(camera3, canvasElement3);
-
-  canvasElement4 = document.getElementById('myCanvas4');
-  renderer4 = new THREE.WebGLRenderer({canvas: canvasElement4,alpha: true});
-  renderer4.setPixelRatio(window.devicePixelRatio);
-  renderer4.setSize(cubewidthbig, cubeheightbig);
-  renderer4.setClearColor( 0xffffff, 0 );
-  scene4 = new THREE.Scene();
-  camera4 = new THREE.PerspectiveCamera(40, cubewidthbig / cubeheightbig,1,1000);
-  camera4.position.set(55, 55, 55);
-  camera4.lookAt(new THREE.Vector3(0, 0, 0));
-  controls4 = new THREE.OrbitControls(camera4, canvasElement4);
-
-  tick1();
-  tick2();
-
-  tick3();
-  tick4();
-
-  cubearray1=CreateCoordinateView(AreaQty,ViewQty,TimeQty,ytrendcube1);
-  cubearray2=CreateCoordinate(AreaQty,SDQty,TimeQty,ytrendcube1);
-
-  DrawAxis();
-  CreateCube1();
-  CreateCube2();
-  CreateAreaTimeViewlabel1();
-  CreateAreaTimeSdlabel2();
-  CreateViewlabel();
-}
-function CreateArealabel(){
-  let i=0;
-  while(i<MainArea.length){
-    let atmp=MainArealabelTransform(MainArea[i]);
-    Mainarealabel=Mainarealabel.concat(atmp[0]);
-    i=i+atmp[1];
-  }
-  i=0;
-  while(i<CompareArea.length){
-    let atmp=CompareArealabelTransform(CompareArea[i]);
-    Comparearealabel=Comparearealabel.concat(atmp[0]);
-    i=i+atmp[1];
-  }
-
-  ArealabelJoinArray(Mainarealabel,Comparearealabel)
-
-  return arealabel;
-}
-function MainArealabelTransform(Areaname){
-  let acount=0;
-  if(Areaname=="HokkaiDo"){
-    transform=["Region"];
-    acount=8;
-  }else if(Areaname=="Hokkai Do"){
-    transform=["HokkaiDo_by_pre"];
-    acount=1;
-  }else if(Areaname=="Aomori Ken"){
-    transform=["Tohoku_by_pre"];
-    acount=6;
-  }else if(Areaname=="Ibaraki Ken"){
-    transform=["Kanto_by_pre"];
-    acount=7;
-  }else if(Areaname=="Niigata Ken"){
-    transform=["Chubu_by_pre"];
-    acount=9;
-  }else if(Areaname=="Mie Ken"){
-    transform=["Kinki_by_pre"];
-    acount=7;
-  }else if(Areaname=="Shimane Ken"){
-    transform=["Chugoku_by_pre"];
-    acount=5;
-  }else if(Areaname=="Kagawa Ken"){
-    transform=["Shikoku_by_pre"];
-    acount=4;
-  }else if(Areaname=="Fukuoka Ken"){
-    transform=["Kyushu_by_pre"];
-    acount=8
-  }else if(Areaname=="Japan"){
-    transform=[Areaname];
-    acount=1;
-  }
-
-  return [transform,acount]
-}
-function CompareArealabelTransform(Areaname){
-  let acount=0;
-  if(Areaname=="Hokkai Do"){
-    transform=["HokkaiDo_by_pre"];
-    acount=1;
-  }else if(Areaname=="Aomori Ken"){
-    transform=["Tohoku_by_pre"];
-    acount=6;
-  }else if(Areaname=="Ibaraki Ken"){
-    transform=["Kanto_by_pre"];
-    acount=7;
-  }else if(Areaname=="Niigata Ken"){
-    transform=["Chubu_by_pre"];
-    acount=9;
-  }else if(Areaname=="Mie Ken"){
-    transform=["Kinki_by_pre"];
-    acount=7;
-  }else if(Areaname=="Shimane Ken"){
-    transform=["Chugoku_by_pre"];
-    acount=5;
-  }else if(Areaname=="Kagawa Ken"){
-    transform=["Shikoku_by_pre"];
-    acount=4;
-  }else if(Areaname=="Fukuoka Ken"){
-    transform=["Kyushu_by_pre"];
-    acount=8
-  }else if(Areaname=="Japan" || Areaname=="HokkaiDo" || Areaname=="Tohoku" || Areaname=="Kanto" || Areaname=="Chubu" || Areaname=="Kinki" || Areaname=="Chugoku" || Areaname=="Shikoku" || Areaname=="Kyushu"){
-    transform=[Areaname];
-    acount=1;
-  }
-
-  return [transform,acount]
-}
-function ArealabelJoinArray(Mainarealabel,Comparearealabel){
-  arealabel=Mainarealabel.concat(Comparearealabel);
-}
-function CreateViewlabel(){
-  let cubecount1=0;
-  let viewlabelarray=[];
-  let Timelabellength=cubelabelTime();
-  let Arealabellength=cubelabelArea(1);
-  for(let i=0;i<cubearray1.length;i++){
-    ycoordinate1=cubecount1;
-    viewlabelarray.push(cubecount1);
-    for(let j=0;j<cubearray1[i].length;j++){
-      loader1.load('https://unpkg.com/three@0.131.3/examples/fonts/helvetiker_regular.typeface.json', function(font1){
-        var viewgeo = new THREE.TextGeometry(viewlabel[i], {font: font1,size: 0.5,curveSegments: 20,height: 0});
-        var viewmate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var viewmesh = new THREE.Mesh(viewgeo, viewmate);
-        viewmesh.position.set(Arealabellength[0][2],1.1+viewlabelarray[i],Timelabellength[2]);
-        viewmesh.lookAt( new THREE.Vector3(0,100000000,1000000));
-        scene1.add(viewmesh);
-      });
-    }
-    cubecount1+=1;
-  }
-}
-function CreateAreaTimeViewlabel1(){
-  let arealabelarray=[];
-  let Timelabellength=cubelabelTime();
-  let Arealabellength=cubelabelArea(cubearray1[ytrendcube1].length);
-
-  for(let k=0;k<cubearray1[ytrendcube1].length;k++){
-    xtrendcube1=Arealabellength[k];
-    arealabelarray.push(xtrendcube1);
-
-    loader1.load('https://unpkg.com/three@0.131.3/examples/fonts/helvetiker_regular.typeface.json', function(font1){
-      var areageo = new THREE.TextGeometry(arealabel[k], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-      var areamate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var areamesh = new THREE.Mesh(areageo, areamate);
-      areamesh.position.set(arealabelarray[k][0],0.35+ytrendcube1,Timelabellength[0]);
-      areamesh.lookAt( new THREE.Vector3(0,0,1000000));
-      scene1.add(areamesh);
-
-      var timegeo = new THREE.TextGeometry(timelabel, {font: font1,size: 0.4,curveSegments: 20,height: 0});
-      var timemate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var timemesh = new THREE.Mesh(timegeo, timemate);
-      timemesh.position.set(arealabelarray[k][1],0.3+ytrendcube1,Timelabellength[1]);
-      timemesh.lookAt( new THREE.Vector3(1000000,0,0));
-      scene1.add(timemesh);
-
-      var viewgeo = new THREE.TextGeometry(viewlabel[ytrendcube1], {font: font1,size: 0.5,curveSegments: 20,height: 0});
-      var viewmate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var viewmesh = new THREE.Mesh(viewgeo, viewmate);
-      viewmesh.position.set(arealabelarray[k][2],1.1+ytrendcube1,Timelabellength[2]);
-      viewmesh.lookAt( new THREE.Vector3(0,100000000,1000000));
-      scene1.add(viewmesh);
-
-      var areageo = new THREE.TextGeometry(arealabel[k], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-      var areamate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var areamesh = new THREE.Mesh(areageo, areamate);
-      areamesh.position.set(arealabelarray[k][0],0.35+ytrendcube1,Timelabellength[0]);
-      areamesh.lookAt( new THREE.Vector3(0,0,1000000));
-      scene3.add(areamesh);
-
-      var timegeo = new THREE.TextGeometry(timelabel, {font: font1,size: 0.4,curveSegments: 20,height: 0});
-      var timemate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var timemesh = new THREE.Mesh(timegeo, timemate);
-      timemesh.position.set(arealabelarray[k][1],0.3+ytrendcube1,Timelabellength[1]);
-      timemesh.lookAt( new THREE.Vector3(1000000,0,0));
-      scene3.add(timemesh);
-
-      var viewgeo = new THREE.TextGeometry(viewlabel[ytrendcube1], {font: font1,size: 0.5,curveSegments: 20,height: 0});
-      var viewmate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-      var viewmesh = new THREE.Mesh(viewgeo, viewmate);
-      viewmesh.position.set(arealabelarray[k][2],1.1+ytrendcube1,Timelabellength[2]);
-      viewmesh.lookAt( new THREE.Vector3(0,100000000,1000000));
-      scene3.add(viewmesh);
-    });
-  }
-}
-function CreateAreaTimeSdlabel2(){
-  let cubecount2=0;
-  let Timelabellength=cubelabelTime();
-  let Arealabellength=cubelabelArea(cubearray2[0].length);
-
-  for(let i=0;i<cubearray2.length;i++){
-    let arealabelarray=[];
-    let sdlabelarray=[];
-    for(let j=0;j<cubearray2[i].length;j++){
-      xcoordinate2=Arealabellength[j]
-      ycoordinate2=cubecount2;
-      zcoordinate2=cubearray2[i][j][1];
-      arealabelarray.push(xcoordinate2);
-      sdlabelarray.push(ycoordinate2);
-
-
-      loader1.load('https://unpkg.com/three@0.131.3/examples/fonts/helvetiker_regular.typeface.json', function(font1){
-        var areageo = new THREE.TextGeometry(arealabel[j], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-        var areamate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var areamesh = new THREE.Mesh(areageo, areamate);
-        areamesh.position.set(arealabelarray[j][0],0.35+sdlabelarray[j],Timelabellength[0]);
-        areamesh.lookAt( new THREE.Vector3(0,0,1000000));
-        scene2.add(areamesh);
-
-        var timegeo = new THREE.TextGeometry(timelabel, {font: font1,size: 0.4,curveSegments: 20,height: 0});
-        var timemate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var timemesh = new THREE.Mesh(timegeo, timemate);
-        timemesh.position.set(arealabelarray[j][1],0.3+sdlabelarray[j],Timelabellength[1]);
-        timemesh.lookAt( new THREE.Vector3(1000000,0,0));
-        scene2.add(timemesh);
-
-        var sdgeo = new THREE.TextGeometry(sdlabel[i], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-        var sdmate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var sdmesh = new THREE.Mesh(sdgeo, sdmate);
-        sdmesh.position.set(arealabelarray[j][2],1.1+sdlabelarray[j],Timelabellength[2]);
-        sdmesh.lookAt( new THREE.Vector3(0,100000000,1000000));
-        scene2.add(sdmesh);
-
-        var areageo = new THREE.TextGeometry(arealabel[j], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-        var areamate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var areamesh = new THREE.Mesh(areageo, areamate);
-        areamesh.position.set(arealabelarray[j][0],0.35+sdlabelarray[j],Timelabellength[0]);
-        areamesh.lookAt( new THREE.Vector3(0,0,1000000));
-        scene4.add(areamesh);
-
-        var timegeo = new THREE.TextGeometry(timelabel, {font: font1,size: 0.4,curveSegments: 20,height: 0});
-        var timemate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var timemesh = new THREE.Mesh(timegeo, timemate);
-        timemesh.position.set(arealabelarray[j][1],0.3+sdlabelarray[j],Timelabellength[1]);
-        timemesh.lookAt( new THREE.Vector3(1000000,0,0));
-        scene4.add(timemesh);
-
-        var sdgeo = new THREE.TextGeometry(sdlabel[i], {font: font1,size: 0.17,curveSegments: 20,height: 0});
-        var sdmate = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        var sdmesh = new THREE.Mesh(sdgeo, sdmate);
-        sdmesh.position.set(arealabelarray[j][2],1.1+sdlabelarray[j],Timelabellength[2]);
-        sdmesh.lookAt( new THREE.Vector3(0,100000000,1000000));
-        scene4.add(sdmesh);
-      });
-    }
-    cubecount2+=1;
-  }
-}
-
-function cubelengthTime(){
-  let cubelength=0;
-  let cubeposition=0;
-
-  if(xtypename=="year"){
-    cubelength=4;
-    cubeposition=1;
-  }else if(xtypename=="monthyear"){
-    cubelength=3;
-    cubeposition=0.5;
-  }else{
-    cubelength=2;
-    cubeposition=0;
-  }
-
-  return [cubelength,cubeposition];
-}
-
-function cubelabelTime(){
-  let Timelength=cubelengthTime();
-  let Timelabellength=[];
-
-  Timelabellength=[Timelength[0]+0.1,Timelength[0]-0.1,Timelength[1]+1];
-
-  return Timelabellength;
-}
-
-
-function cubelengthArea(){
-  let cubelength=[];
-  let cubeposition=[];
-  let cubelengthmax=[];
-
-    if(arealabel[0]=="Japan"){
-      cubelength[0]=4;
-      cubeposition[0]=1;
-      cubelengthmax[0]=4;
-    }else if(arealabel[0]=="Region" || arealabel[0]=="HokkaiDo" || arealabel[0]=="Tohoku" || arealabel[0]=="Kanto" || arealabel[0]=="Chubu" || arealabel[0]=="Kinki" || arealabel[0]=="Chugoku" || arealabel[0]=="Shikoku" || arealabel[0]=="Kyushu"){
-      cubelength[0]=3;
-      cubeposition[0]=0.5;
-      cubelengthmax[0]=3;
-    }else{
-      cubelength[0]=2;
-      cubeposition[0]=0;
-      cubelengthmax[0]=2;
-    }
-
-  for(let i=1;i<arealabel.length;i++){
-      if(arealabel[i]=="Japan"){
-        cubelength[i]=4;
-        cubeposition[i]=1+cubelengthmax[i-1];
-      }else if(arealabel[i]=="Region" || arealabel[i]=="HokkaiDo" || arealabel[i]=="Tohoku" || arealabel[i]=="Kanto" || arealabel[i]=="Chubu" || arealabel[i]=="Kinki" || arealabel[i]=="Chugoku" || arealabel[i]=="Shikoku" || arealabel[i]=="Kyushu"){
-        cubelength[i]=3;
-        cubeposition[i]=0.5+cubelengthmax[i-1];
-      }else{
-        cubelength[i]=2;
-        cubeposition[i]=0+cubelengthmax[i-1];
-      }
-      cubelengthmax[i]=cubelengthmax[i-1]+cubelength[i];
-  }
-
-  return [cubelength, cubeposition, cubelengthmax]
-}
-
-function cubelabelArea(size){
-  let Arealength=cubelengthArea();
-  let Arealabellength=[];
-
-  if(arealabel[0]=="Japan"){
-    Arealabellength=[[0,4.1,0]];
-  }else if(arealabel[0]=="Region"){
-    Arealabellength=[[0,3.1,0]];
-  }else{
-    Arealabellength=[[0,2.1,0]];
-  }
-
-  for(let i=1;i<size;i++){
-    Arealabellength[i]=[Arealength[2][i-1]+0.1,Arealength[2][i]+0.1,Arealength[2][i-1]+0.1];
-  }
-
-  return Arealabellength;
-}
-
-
-function CreateCube1(){
-  let cubecount1=0.5;
-  let color1=0;
-  let Timelength=cubelengthTime();
-  let Arealength=cubelengthArea();
-
-  for(let i=0;i<cubearray1.length;i++){
-    for(let j=0;j<cubearray1[i].length;j++){
-      xcoordinate1=cubearray1[i][j][0];
-      ycoordinate1=cubecount1;
-      zcoordinate1=cubearray1[i][j][1];
-      geometry1 = new THREE.BoxGeometry(Arealength[0][j], 1, Timelength[0]);
-      cube_material1 = new THREE.MeshBasicMaterial({ color:  `hsl(${color1}, 80%, 60%)`,opacity:0.3,transparent:true} );
-      cube1 = new THREE.Mesh(geometry1, cube_material1);
-      cube1.position.set(xcoordinate1+Arealength[1][j], ycoordinate1, zcoordinate1+Timelength[1]);
-      scene1.add(cube1);
-      lineedges1 = new THREE.EdgesGeometry( geometry1 );
-      line1 = new THREE.LineSegments( lineedges1, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-      line1.position.set(xcoordinate1+Arealength[1][j], ycoordinate1, zcoordinate1+Timelength[1]);
-      scene1.add( line1 );
-
-      geometry3 = new THREE.BoxGeometry(Arealength[0][j], 1, Timelength[0]);
-      cube_material3 = new THREE.MeshBasicMaterial({ color:  `hsl(${color1}, 80%, 60%)`,opacity:0.3,transparent:true} );
-      cube3 = new THREE.Mesh(geometry3, cube_material3);
-      cube3.position.set(xcoordinate1+Arealength[1][j], ycoordinate1, zcoordinate1+Timelength[1]);
-      scene3.add(cube3);
-      lineedges3 = new THREE.EdgesGeometry( geometry3 );
-      line3 = new THREE.LineSegments( lineedges3, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-      line3.position.set(xcoordinate1+Arealength[1][j], ycoordinate1, zcoordinate1+Timelength[1]);
-      scene3.add( line3 );
-
-      color1+=36;
-    }
-    cubecount1+=1;
-  }
-
-  for(let k=0;k<cubearray1[ytrendcube1].length;k++){
-    xtrendcube1=cubearray1[ytrendcube1][k][0];
-    ztrendcube1=cubearray1[ytrendcube1][k][1];
-
-    geometry1 = new THREE.BoxGeometry(Arealength[0][k], 1, Timelength[0]);
-    cube_material1 = new THREE.MeshBasicMaterial({ color: 0xdc143c,opacity:1,transparent:true} );
-    cube1 = new THREE.Mesh(geometry1, cube_material1);
-    cube1.position.set(xtrendcube1+Arealength[1][k], ytrendcube1+0.5, ztrendcube1+Timelength[1]);
-    scene1.add(cube1);
-
-    geometry3 = new THREE.BoxGeometry(Arealength[0][k], 1, Timelength[0]);
-    cube_material3 = new THREE.MeshBasicMaterial({ color: 0xdc143c,opacity:1,transparent:true} );
-    cube3 = new THREE.Mesh(geometry3, cube_material3);
-    cube3.position.set(xtrendcube1+Arealength[1][k], ytrendcube1+0.5, ztrendcube1+Timelength[1]);
-    scene3.add(cube3);
-  }
-}
-function CreateCube2(){
-  let cubecount2=0.5;
-  let color2=0;
-  let Timelength=cubelengthTime();
-  let Arealength=cubelengthArea();
-  for(let i=0;i<cubearray2.length;i++){
-    for(let j=0;j<cubearray2[i].length;j++){
-      xcoordinate2=cubearray2[i][j][0];
-      ycoordinate2=cubecount2;
-      zcoordinate2=cubearray2[i][j][1];
-      geometry2 = new THREE.BoxGeometry(Arealength[0][j], 1, Timelength[0]);
-      cube_material2 = new THREE.MeshBasicMaterial({ color:  `hsl(${color2}, 80%, 60%)`,opacity:1,transparent:true} );
-      cube2 = new THREE.Mesh(geometry2, cube_material2);
-      cube2.position.set(xcoordinate2+Arealength[1][j], ycoordinate2, zcoordinate2+Timelength[1]);
-      scene2.add(cube2);
-      lineedges2 = new THREE.EdgesGeometry( geometry2 );
-      line2 = new THREE.LineSegments( lineedges2, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-      line2.position.set(xcoordinate2+Arealength[1][j], ycoordinate2, zcoordinate2+Timelength[1]);
-      scene2.add( line2 );
-
-      geometry4 = new THREE.BoxGeometry(Arealength[0][j], 1, Timelength[0]);
-      cube_material4 = new THREE.MeshBasicMaterial({ color:  `hsl(${color2}, 80%, 60%)`,opacity:1,transparent:true} );
-      cube4 = new THREE.Mesh(geometry4, cube_material4);
-      cube4.position.set(xcoordinate2+Arealength[1][j], ycoordinate2, zcoordinate2+Timelength[1]);
-      scene4.add(cube4);
-      lineedges2 = new THREE.EdgesGeometry( geometry4 );
-      line4 = new THREE.LineSegments( lineedges2, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-      line4.position.set(xcoordinate2+Arealength[1][j], ycoordinate2, zcoordinate2+Timelength[1]);
-      scene4.add( line4 );
-    }
-    color2+=36;
-    cubecount2+=1;
-  }
-}
-function adaddcoordinate(){
-  SDQty++;
-}
-function caddcoordinate(){
-  AreaQty++;
-}
-function rdatacoordinate(){
-  SDQty--;
-}
-function Adrillcoordinate(){
-  AreaQty--;
-}
-function SpinLabel(){
-  if(flag===0){
-    if(type===0){
-      ytrendcube1=0;
-    }else if(type===1){
-      ytrendcube1=1;
-    }else if(type===2){
-      ytrendcube1=2;
-    }else if(type===3){
-      ytrendcube1=3;
-    }else if(type===4){
-      ytrendcube1=4;
-    }else if(type===5){
-      ytrendcube1=5;
-    }
-    viewlabel=["line","map","bar","pie","area","point"];
-  }else if(flag===1){
-    if(type===0){
-      ytrendcube1=0;
-    }else if(type===2){
-      ytrendcube1=1;
-    }else if(type===3){
-      ytrendcube1=2;
-    }else if(type===4){
-      ytrendcube1=3;
-    }else if(type===5){
-      ytrendcube1=4;
-    }
-    viewlabel=["line","bar","pie","area","point"];
-  }
-}
-function TDUTDDLabel(){
+function Setdata(){
   if(xtypename==="datemonthyear"){
-    timelabel="date";
+    dataurl="https://dl.dropboxusercontent.com/s/db18rmizllgguzg/dataset4.csv";
   }else if(xtypename==="monthyear"){
-    timelabel="month";
+    dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
   }else if(xtypename==="year"){
-    timelabel="year";
+    dataurl="https://dl.dropboxusercontent.com/s/fs2pyjqwqf81sfd/dataset232.csv";
   }
 }
-function ADUADDComLabel(){
-  Mainarealabel=[];
-  Comparearealabel=[];
-  arealabel=[];
-  arealabel=CreateArealabel();
+function TDU(){
+  if(xtypename==="monthyear"){
+    xtypename="year";
+  }else if(xtypename==="datemonthyear"){
+    xtypename="monthyear";
+  }
 }
-function AdRdLabel(){
-  sdlabel=yfieldline;
+function TDD(){  //////////////////////////////////////////////////////// ////////////////////////////////////////////////////////
+  if(xtypename==="year"){
+    xtypename="monthyear";
+  }else if(xtypename==="monthyear"){
+    xtypename="datemonthyear";
+  }
 }
-function spindeletecoordinate(){
-  if(flag==0){
-    ViewQty++;
+function Adrill1(){
+  const adrilldown1 = document.form2.Adrill1;
+  const adrilldownnum = adrilldown1.selectedIndex;
+  adrilldownstr = adrilldown1.options[adrilldownnum].value;
+  ADD(adrilldownstr);
+}
+function Adrill2(){
+  const adrilldown2 = document.form5.Adrill2;
+  const adrilldownnum2 = adrilldown2.selectedIndex;
+  adrilldownstr2 = adrilldown2.options[adrilldownnum2].value;
+  ADD(adrilldownstr2);
+}
+function ADD(adrilldownstr){
+  if(Arealevel=="Japan"){
+    MainArea=AdrilldownAreaTransform(Arealevel);
+    Arealevel="Region";
+  }else if(Arealevel=="Region"){
+    MainArea=AdrilldownAreaTransform(adrilldownstr);
+    Arealevel="Prefectures";
+  }
+}
+function ADU(){
+  if(Arealevel=="Region"){
+    MainArea=["Japan"];
+    Arealevel="Japan";
+  }else if(Arealevel=="Prefectures"){
+    MainArea=AdrillupAreaTransform(Arealevel);
+    Arealevel="Region";
+  }
+}
+function AdrilldownAreaTransform(Areaname){
+  if(Areaname=="HokkaiDo" || Areaname=="Hokkai Do"){
+    transform=["Hokkai Do"];
+  }else if(Areaname=="Tohoku" || Areaname=="Aomori Ken"){
+    transform=["Aomori Ken","Iwate Ken","Akita Ken","Miyagi Ken","Yamagata Ken","Fukushima Ken"];
+  }else if(Areaname=="Kanto" || Areaname=="Ibaraki Ken"){
+    transform=["Ibaraki Ken","Tochigi Ken","Gunma Ken","Chiba Ken","Saitama Ken","Tokyo To","Kanagawa Ken"];
+  }else if(Areaname=="Chubu" || Areaname=="Niigata Ken"){
+    transform=["Niigata Ken","Toyama Ken","Ishikawa Ken","Fukui Ken","Nagano Ken","Gifu Ken","Yamanashi Ken","Shizuoka Ken","Aichi Ken"];
+  }else if(Areaname=="Kinki" || Areaname=="Mie Ken"){
+    transform=["Mie Ken","Wakayama Ken","Kyoto Fu","Shiga Ken","Nara Ken","Osaka Fu","Hyogo Ken"];
+  }else if(Areaname=="Chugoku" || Areaname=="Shimane Ken"){
+    transform=["Shimane Ken","Tottori Ken","Okayama Ken","Hiroshima Ken","Yamaguchi Ken"];
+  }else if(Areaname=="Shikoku" || Areaname=="Kagawa Ken"){
+    transform=["Kagawa Ken","Tokushima Ken","Ehime Ken","Kochi Ken"];
+  }else if(Areaname=="Kyushu" || Areaname=="Fukuoka Ken"){
+    transform=["Fukuoka Ken","Oita Ken","Saga Ken","Nagasaki Ken","Kumamoto Ken","Miyazaki Ken","Kagoshima Ken","Okinawa Ken"];
+  }else if(Areaname=="Japan"){
+    transform=["HokkaiDo","Tohoku","Kanto","Chubu","Kinki","Chugoku","Shikoku","Kyushu"];
+  }
+
+  return transform
+}
+function AdrillupAreaTransform(Areaname){
+  if(Areaname=="Prefectures"){
+    transform=["HokkaiDo","Tohoku","Kanto","Chubu","Kinki","Chugoku","Shikoku","Kyushu"];
+  }
+
+  return transform
+}
+function com1(){
+  const cselect2 = document.form3.compareselect2;
+  const comparenum = cselect2.selectedIndex;
+  comparestr = cselect2.options[comparenum].value;
+
+  Com(comparestr);
+}
+function com2(){
+  const cselect4 = document.form6.compareselect4;
+  const comparenum2 = cselect4.selectedIndex;
+  comparestr = cselect4.options[comparenum2].value;
+
+  Com(comparestr);
+}
+function Com(comparestr){
+  let ctmp=CompareTransform(comparestr)
+  CompareArea=CompareArea.concat(ctmp[0])
+}
+function CompareAreaOperate(){
+  if(Arealevel=="Japan"){
+    if(AJFlag==0){
+      if(ARFlag==1){
+        CompareAreaAdd(ARtmpnum[0],ARtmpnum[1]);
+        ARFlag=0;
+      }
+      if(AFlag==1){
+        CompareAreaAdd(Atmpnum[0],Atmpnum[1]);
+        AFlag=0;
+      }
+      AJtmpnum=CompareAreaDelete();
+      AJFlag=AJtmpnum[2]
+    }
+  }else if(Arealevel=="Region"){
+    if(ARFlag==0){
+      if(AJFlag==1){
+        CompareAreaAdd(AJtmpnum[0],AJtmpnum[1]);
+        AJFlag=0;
+      }
+      if(AFlag==1){
+        CompareAreaAdd(Atmpnum[0],Atmpnum[1]);
+        AFlag=0;
+      }
+      ARtmpnum=CompareAreaDelete();
+      ARFlag=ARtmpnum[2]
+    }
+  }else if(Arealevel=="Prefectures"){
+    if(AFlag==0){
+      if(AJFlag==1){
+        CompareAreaAdd(AJtmpnum[0],AJtmpnum[1]);
+        AJFlag=0;
+      }
+      if(ARFlag==1){
+        CompareAreaAdd(ARtmpnum[0],ARtmpnum[1]);
+        ARFlag=0;
+      }
+      Atmpnum=CompareAreaDelete();
+      AFlag=Atmpnum[2]
+    }
+  }
+}
+function CompareAreaDelete(){
+  let cFlag=0;
+  for(let i=0;i<CompareArea.length;i++){
+      if(MainArea[0]===CompareArea[i]){
+          let istep=CompareTransform(CompareArea[i]);
+          Atmp=CompareArea.splice(i,istep[1]);
+          Atmpnum=i;
+          cFlag=1;
+          Adrillcoordinate();
+          i=i+istep[1];
+      }
+  }
+  return [Atmpnum, Atmp,cFlag]
+}
+function CompareAreaAdd(Atmpnum,Atmp){
+  Array.prototype.splice.apply(CompareArea,[Atmpnum,0].concat(Atmp));
+  caddcoordinate();
+}
+function AreaJoinArray(){
+  transformequal=MainArea.concat(CompareArea);
+}
+function CompareTransform(Areaname){
+  let acount=0;
+  if(Areaname=="HokkaiDo" || Areaname=="Tohoku" || Areaname=="Kanto" || Areaname=="Chubu" || Areaname=="Kinki" || Areaname=="Chugoku" || Areaname=="Shikoku" || Areaname=="Kyushu" || Areaname=="Japan"){
+    transform=[Areaname];
+    acount=1;
+  }else if(Areaname=="Hokkai Do"){
+    transform=["Hokkai Do"];
+    acount=1;
+  }else if(Areaname=="Aomori Ken"){
+    transform=["Aomori Ken","Iwate Ken","Akita Ken","Miyagi Ken","Yamagata Ken","Fukushima Ken"];
+    acount=6;
+  }else if(Areaname=="Ibaraki Ken"){
+    transform=["Ibaraki Ken","Tochigi Ken","Gunma Ken","Chiba Ken","Saitama Ken","Tokyo To","Kanagawa Ken"];
+    acount=7;
+  }else if(Areaname=="Niigata Ken"){
+    transform=["Niigata Ken","Toyama Ken","Ishikawa Ken","Fukui Ken","Nagano Ken","Gifu Ken","Yamanashi Ken","Shizuoka Ken","Aichi Ken"];
+    acount=9;
+  }else if(Areaname=="Mie Ken"){
+    transform=["Mie Ken","Wakayama Ken","Kyoto Fu","Shiga Ken","Nara Ken","Osaka Fu","Hyogo Ken"];
+    acount=7;
+  }else if(Areaname=="Shimane Ken"){
+    transform=["Shimane Ken","Tottori Ken","Okayama Ken","Hiroshima Ken","Yamaguchi Ken"];
+    acount=5;
+  }else if(Areaname=="Kagawa Ken"){
+    transform=["Kagawa Ken","Tokushima Ken","Ehime Ken","Kochi Ken"];
+    acount=4;
+  }else if(Areaname=="Fukuoka Ken"){
+    transform=["Fukuoka Ken","Oita Ken","Saga Ken","Nagasaki Ken","Kumamoto Ken","Miyazaki Ken","Kagoshima Ken","Okinawa Ken"];
+    acount=8;
+  }
+  return [transform,acount]
+}
+function Comparedata(){
+  const comparedata1 = document.form1.comparedata;
+  const comparedatanum = comparedata1.selectedIndex;
+  comparedatastr = comparedata1.options[comparedatanum].value;
+
+  for(let i=0;i<dataset.length;i++){
+    if(dataset[i]==comparedatastr){
+      dataset.splice(i,1);
+      dataset_ja.splice(i,1)
+    }
+  }
+
+  AddData.push(comparedatastr);
+}
+function RemoveData(){
+  const rselect = document.forms.form7.removedata;
+  const rselectnum = rselect.selectedIndex;
+  rselectstr = rselect.options[rselectnum].value;
+
+  for(let i=0;i<yfieldline.length;i++){
+    if(yfieldline[i]===rselectstr){
+      rdata=yfieldline.splice(i,1)
+      if(i==0){
+        MainData[0]=AddData[0];
+        AddData.splice(0,1);
+      }else{
+        AddData.splice(i-1,1);
+      }
+    }
+  }
+  Editdataset(rdata);
+}
+function Editdataset(rdata){
+  for(let i=0;i<dset.length;i++){
+    if(rdata==dset[i]){
+      dataset_ja.push(dset_ja[i]);
+      dataset.push(dset[i]);
+    }
+  }
+  Comparedataselect();
+}
+function DataJoinArray(){
+  yfieldline=MainData.concat(AddData);
+}
+function Sp(){
+  if(flag===0){
+    flag=1;
   }else{
-    ViewQty--;
+    flag=0;
   }
 }
-function transitioncoordinate(){
+function Trans(){
+  const transition1 = document.form4.transition;
+  const transitionnum = transition1.selectedIndex;
+  transitionstr = transition1.options[transitionnum].value;
+
+  if(transitionstr==="line"){
+    type=0;
+  }else if(transitionstr==="map"){
+    type=1;
+  }else if(transitionstr==="bar"){
+    type=2;
+  }else if(transitionstr==="pie"){
+    type=3;
+  }else if(transitionstr==="varea"){
+    type=4;
+  }else if(transitionstr==="point"){
+    type=5;
+  }
+}
+function setConfig(){
   if(flag===0){
     if(type===0){
-      ytrendcube1=0;
-    }else if(type===1){
-      ytrendcube1=1;
-    }else if(type===2){
-      ytrendcube1=2;
-    }else if(type===3){
-      ytrendcube1=3;
+      viswidth=1200;
+      visheight=500;
+    }else if(type===1){ ////////////////////////////////////////////////////////////////////////////////////////////
+      viswidth=300;
+      visheight=300;
+      // if(yfieldline.length<=2){
+      //   viscolumns=4;
+      // }else if(yfieldline.length===3){
+      //   viscolumns=3;
+      // }else{
+        // viscolumns=2;
+      // }
+    }else if(type===2){ ////////////////////////////////////////////////////////////////////////////////////////////
+      // if(xtypename==="year"){
+      //   viswidth=300;
+      //   visheight=250;
+      //   if(yfieldline.length<=4){
+      //     viscolumns=20;
+      //   }else{
+      //     viscolumns=112;
+      //   }
+      // }else if(xtypename==="monthyear"){
+          visheight=350;
+        // if(transformequal.length<=2){
+          viswidth=50*transformequal.length*yfieldline.length;
+          viscolumns=1;
+        // }else{
+        //   viswidth=100*transformequal.length;
+        //   viscolumns=10;
+        // }
+      // }else{
+      //   visheight=300;
+      //   viswidth=300
+      //   viscolumns=4;
+      // }
+    }else if(type===3){ ////////////////////////////////////////////////////////////////////////////////////////////
+      // if(yfieldline.length<=2){
+        // viscolumns=4;
+      // }else if(yfieldline.length<=4){
+        viscolumns=1;
+      // }else{
+      //   viscolumns=1;
+      // }
+      viswidth=300;
+      visheight=300;
     }else if(type===4){
-      ytrendcube1=4;
+      viswidth=1200;
+      visheight=500;
+      viscolumns=1;
     }else if(type===5){
-      ytrendcube1=5;
+      viswidth=1000;
+      visheight=500;
     }
-  }else if(flag===1){
+  }else{
     if(type===0){
-      ytrendcube1=0;
+      viswidth=1200;
+      visheight=500;
     }else if(type===2){
-      ytrendcube1=1;
-    }else if(type===3){
-      ytrendcube1=2;
+      visheight=350;
+      viswidth=800;
+      viscolumns=1;
+    }else if(type===3){ ////////////////////////////////////////////////////////////////////////////////////////////
+      // if(yfieldline.length<=2){
+      //   viscolumns=4;
+      // }else if(yfieldline.length<=4){
+      //   viscolumns=2;
+      // }else{
+      //   viscolumns=1;
+      // }
+
+      viscolumns=1;
+      viswidth=300;
+      visheight=300;
     }else if(type===4){
-      ytrendcube1=3;
+      viswidth=1200;
+      visheight=500;
+      viscolumns=1;
     }else if(type===5){
-      ytrendcube1=4;
+      viswidth=1000;
+      visheight=500;
     }
   }
+}
+function visualize(){  //////////////////////////////////////////////////////// //////////////////////////////////////////////////////// //////////////////////////////////////////////////////// ////////////////////////////////////////////////////////
+  setConfig();
+  Setdata();
+  if(xtypename=="year"){
+    if(type===0){
+      visualizeLineyear();
+    }else if(type===1){
+      visualizeMapyear();
+    }else if(type===2){
+      visualizeBaryear();
+    }else if(type===3){
+      visualizeArcyear();
+    }else if(type===4){
+      visualizeAreayear();
+    }else if(type===5){
+      visualizePointyear();
+    }
+  }else if(xtypename=="monthyear"){
+    if(type===0){
+      visualizeLinemonth();
+    }else if(type===1){
+      visualizeMapmonth();
+    }else if(type===2){
+      visualizeBarmonth();
+    }else if(type===3){
+      visualizeArcmonth();
+    }else if(type===4){
+      visualizeAreamonth();
+    }else if(type===5){
+      visualizePointmonth();
+    }
+  }else{
+    if(type===0){
+      visualizeLinedate();
+    }else if(type===1){
+      visualizeMapdate();
+    }else if(type===2){
+      visualizeBardate();
+    }else if(type===3){
+      visualizeArcdate();
+    }else if(type===4){
+      visualizeAreadate();
+    }else if(type===5){
+      visualizePointdate();
+    }
+  }
+}
+function visualizeLinedate(){
+  if (flag===0){
+      var visualline={
+        "width":viswidth,
+        "height":visheight,
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark":{"type":"line"},
+        "encoding":{
+          "x":{"field":"name","type":"nominal","title":""},
+          "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+          "color": {"condition": {"param": "click","field": "date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value":"lightgray"},
+          "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      };
+  }else{
+    var visualline={
+      "width":viswidth,
+      "height":visheight,
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+      "mark":{"type":"line"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+        "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+
+  vegaEmbed('#vis', visualline);
+}
+function visualizeBardate(){
+  if (flag===1){
+      var visualbar={
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["x","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":"",},
+        "columns":viscolumns,
+        "spec":{
+          "height":visheight,
+          "width":viswidth,
+            "mark":{"type":"bar"},
+            "encoding":{
+              "x":{"field":"date","timeUnit":xtypename,"title":""},
+              "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+              "facet":{"field":"key","type":"nominal","title":"","spacing":-2,"header":{"labelFontSize":9},"scale":{"y":"independent"},"columns":2},
+              "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+              "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "resolve": {"scale": {"x": "independent"}}
+        },
+      };
+  }else{
+    var visualbar={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["x","strokeDash"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"title":"","spacing":-2,"header":{"labelFontSize":6}},
+      "columns":viscolumns,
+      "spacing":-2,
+      "spec":{
+        "height":visheight,
+        "width":viswidth,
+          "mark":{"type":"bar"},
+          "encoding":{
+            "x":{"field":"name","type":"nominal","title":""},
+            "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+            "xOffset":{"field":"key","type":"nominal","title":"","spacing":-2},
+            "strokeDash": {"field": "date","timeUnit":xtypename,"type": "nominal","legend":null},
+            "color": {"condition": {"param": "click","field": "key","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      },
+      "resolve": {"axis": {"x": "independent"}}
+    };
+  }
+  vegaEmbed('#vis', visualbar);
+}
+function visualizeMapdate(){
+  var visualmap={
+    "data": {"url": dataurl},
+    "transform": [
+      {"filter":{"field":"name","oneOf": transformequal}},
+      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+      {"lookup": "name",
+       "from": {"data": {"url": "https://dl.dropboxusercontent.com/s/ueuefj52e84dfdf/japan3.geojson","format":{"type": "json","property":"features"}},
+                "key": "properties.nam"},"as":"geo"
+      }
+    ],
+    "params": [{"name": "click","select": {"type": "point", "encodings": ["shape","color"]}}],
+    "repeat":{"row":yfieldline},
+    "spec":{
+      "width": viswidth,
+      "height": visheight,
+      "mark": {"type": "geoshape"},
+      "projection": {"type": "mercator"},
+      "encoding": {
+        "shape": {"field": "geo","type":"geojson"},
+        "color": {"condition": {"param": "click","field": {"repeat":"row"},"type":"quantitative"},"value": "lightgray"},
+        "facet":{"field":"date","timeUnit":xtypename,"title":""},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":{"repeat":"row"},"type":"quantitative"}]
+      },
+    },
+    "resolve": {"scale": {"color": "independent"}},
+    "config": {"view": {"stroke": "transparent"}}
+  };
+  vegaEmbed('#vis', visualmap);
+}
+function visualizeArcdate(){
+  if (flag===1){
+      var visualarc={
+        "data": {"url":dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                      {"fold": yfieldline}],
+        "params": [{"name": "click","select": {"type": "point","encodings":["strokeOpacity","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":""},
+        "columns":viscolumns,
+        "spec":{
+          "mark": {"type":"arc"},
+          "encoding": {
+            "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+            "column": {"field": "key", "type": "nominal","title":""},
+            "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "strokeOpacity": {"field": "name", "type": "nominal","legend":null},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nomianl","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "view": {"stroke": "transparent"}
+        }
+      };
+  }else{
+    var visualarc={
+      "data": {"url":dataurl},
+      "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                    {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                    {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","strokeOpacity"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"type":"nominal","title":""},
+      "columns": viscolumns,
+      "spec":{
+        "width": viswidth,
+        "height": visheight,
+        "mark": {"type":"arc"},
+        "encoding": {
+          "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+          "strokeOpacity": {"field": "date", "timeUnit": xtypename,"legend":null},
+          "facet":{"field":"key","type":"nominal","title":""},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "view": {"stroke": "transparent"}
+      },
+      };
+  }
+  vegaEmbed('#vis', visualarc);
+}
+function visualizeAreadate(){
+    if (flag===0){
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"timeUnit": xtypename, "field": "date","title":""},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum", "axis": null},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}}
+      }
+    }else{
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"field": "name","type":"nominal","title":null},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum","axis":null},
+          "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}},
+        "config": {"view": {"stroke": "transparent"},"scale": {"pointPadding": 0}}
+      };
+    }
+    vegaEmbed('#vis', visualarea);
+  }
+function visualizePointdate(){
+  if (flag===0){
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"name","tyoe":"nominal","title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color":{"condition":{"param":"click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key","type": "nominal"},
+        "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      },
+    };
+  }else{
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1],"date":1},{"year":endedit[0],"month":endedit[1],"date":31}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition":{"param":"click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key", "type": "nominal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+  vegaEmbed('#vis', visualpoint);
+}
+
+function visualizeLinemonth(){
+  if (flag===0){
+      var visualline={
+        "width":viswidth,
+        "height":visheight,
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark":{"type":"line"},
+        "encoding":{
+          "x":{"field":"name","type":"nominal","title":""},
+          "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+          "color": {"condition": {"param": "click","field": "date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value":"lightgray"},
+          "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      };
+  }else{
+    var visualline={
+      "width":viswidth,
+      "height":visheight,
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+      "mark":{"type":"line"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+        "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+
+  vegaEmbed('#vis', visualline);
+}
+function visualizeBarmonth(){
+  if (flag===1){
+      var visualbar={
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["x","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":"",},
+        "columns":viscolumns,
+        "spec":{
+          "height":visheight,
+          "width":viswidth,
+            "mark":{"type":"bar"},
+            "encoding":{
+              "x":{"field":"date","timeUnit":xtypename,"title":""},
+              "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+              "facet":{"field":"key","type":"nominal","title":"","spacing":-2,"header":{"labelFontSize":9},"scale":{"y":"independent"},"columns":2},
+              "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+              "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "resolve": {"scale": {"x": "independent"}}
+        },
+      };
+  }else{
+    var visualbar={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["x","strokeDash"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"title":"","spacing":-2,"header":{"labelFontSize":6}},
+      "columns":viscolumns,
+      "spacing":-2,
+      "spec":{
+        "height":visheight,
+        "width":viswidth,
+          "mark":{"type":"bar"},
+          "encoding":{
+            "x":{"field":"name","type":"nominal","title":""},
+            "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+            "xOffset":{"field":"key","type":"nominal","title":"","spacing":-2},
+            "strokeDash": {"field": "date","timeUnit":xtypename,"type": "nominal","legend":null},
+            "color": {"condition": {"param": "click","field": "key","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      },
+      "resolve": {"axis": {"x": "independent"}}
+    };
+  }
+  vegaEmbed('#vis', visualbar);
+}
+function visualizeMapmonth(){
+  var visualmap={
+    "data": {"url": dataurl},
+    "transform": [
+      {"filter":{"field":"name","oneOf": transformequal}},
+      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+      {"lookup": "name",
+       "from": {"data": {"url": "https://dl.dropboxusercontent.com/s/ueuefj52e84dfdf/japan3.geojson","format":{"type": "json","property":"features"}},
+                "key": "properties.nam"},"as":"geo"
+      }
+    ],
+    "params": [{"name": "click","select": {"type": "point", "encodings": ["shape","color"]}}],
+    "repeat":{"row":yfieldline},
+    "columns":1,
+    "spec":{
+      "width": viswidth,
+      "height": visheight,
+      "mark": {"type": "geoshape"},
+      "projection": {"type": "mercator"},
+      "encoding": {
+        "shape": {"field": "geo","type":"geojson"},
+        "color": {"condition": {"param": "click","field": {"repeat":"row"},"type":"quantitative"},"value": "lightgray"},
+        "facet":{"field":"date","timeUnit":xtypename,"title":""},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":{"repeat":"row"},"type":"quantitative"}]
+      },
+    },
+    "resolve": {"scale": {"color": "independent"}},
+    "config": {"view": {"stroke": "transparent"}}
+  };
+  vegaEmbed('#vis', visualmap);
+}
+function visualizeArcmonth(){
+  if (flag===1){
+      var visualarc={
+        "data": {"url":dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                      {"fold": yfieldline}],
+        "params": [{"name": "click","select": {"type": "point","encodings":["strokeOpacity","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":""},
+        "columns":viscolumns,
+        "spec":{
+          "mark": {"type":"arc"},
+          "encoding": {
+            "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+            "column": {"field": "key", "type": "nominal","title":""},
+            "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "strokeOpacity": {"field": "name", "type": "nominal","legend":null},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nomianl","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "view": {"stroke": "transparent"}
+        }
+      };
+  }else{
+    var visualarc={
+      "data": {"url":dataurl},
+      "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                    {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                    {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","strokeOpacity"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"type":"nominal","title":""},
+      "columns": viscolumns,
+      "spec":{
+        "width": viswidth,
+        "height": visheight,
+        "mark": {"type":"arc"},
+        "encoding": {
+          "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+          "strokeOpacity": {"field": "date", "timeUnit": xtypename,"legend":null},
+          "facet":{"field":"key","type":"nominal","title":""},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "view": {"stroke": "transparent"}
+      },
+      };
+  }
+  vegaEmbed('#vis', visualarc);
+}
+function visualizeAreamonth(){
+    if (flag===0){
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"timeUnit": xtypename, "field": "date","title":""},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum", "axis": null},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}}
+      }
+    }else{
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"field": "name","type":"nominal","title":null},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum","axis":null},
+          "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}},
+        "config": {"view": {"stroke": "transparent"},"scale": {"pointPadding": 0}}
+      };
+    }
+    vegaEmbed('#vis', visualarea);
+  }
+function visualizePointmonth(){
+  if (flag===0){
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"name","tyoe":"nominal","title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color":{"condition":{"param":"click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key","type": "nominal"},
+        "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      },
+    };
+  }else{
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0],"month":startedit[1]},{"year":endedit[0],"month":endedit[1]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition":{"param":"click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key", "type": "nominal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+  vegaEmbed('#vis', visualpoint);
+}
+
+function visualizeLineyear(){
+  if (flag===0){
+      var visualline={
+        "width":viswidth,
+        "height":visheight,
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark":{"type":"line"},
+        "encoding":{
+          "x":{"field":"name","type":"nominal","title":""},
+          "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+          "color": {"condition": {"param": "click","field": "date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value":"lightgray"},
+          "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      };
+  }else{
+    var visualline={
+      "width":viswidth,
+      "height":visheight,
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+      "mark":{"type":"line"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+        "strokeDash": {"field": "key", "type": "ordinal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+
+  vegaEmbed('#vis', visualline);
+}
+function visualizeBaryear(){
+  if (flag===1){
+      var visualbar={
+        "data":{"url":dataurl},
+        "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                     {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                     {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["x","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":"",},
+        "columns":viscolumns,
+        "spec":{
+          "height":visheight,
+          "width":viswidth,
+            "mark":{"type":"bar"},
+            "encoding":{
+              "x":{"field":"date","timeUnit":xtypename,"title":""},
+              "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+              "facet":{"field":"key","type":"nominal","title":"","spacing":-2,"header":{"labelFontSize":9},"scale":{"y":"independent"},"columns":2},
+              "color": {"condition": {"param": "click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+              "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "resolve": {"scale": {"x": "independent"}}
+        },
+      };
+  }else{
+    var visualbar={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["x","strokeDash"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"title":"","spacing":-2,"header":{"labelFontSize":6}},
+      "columns":viscolumns,
+      "spacing":-2,
+      "spec":{
+        "height":visheight,
+        "width":viswidth,
+          "mark":{"type":"bar"},
+          "encoding":{
+            "x":{"field":"name","type":"nominal","title":""},
+            "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+            "xOffset":{"field":"key","type":"nominal","title":"","spacing":-2},
+            "strokeDash": {"field": "date","timeUnit":xtypename,"type": "nominal","legend":null},
+            "color": {"condition": {"param": "click","field": "key","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+      },
+      "resolve": {"axis": {"x": "independent"}}
+    };
+  }
+  vegaEmbed('#vis', visualbar);
+}
+function visualizeMapyear(){
+  var visualmap={
+    "data": {"url": dataurl},
+    "transform": [
+      {"filter":{"field":"name","oneOf": transformequal}},
+      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+      {"lookup": "name",
+       "from": {"data": {"url": "https://dl.dropboxusercontent.com/s/ueuefj52e84dfdf/japan3.geojson","format":{"type": "json","property":"features"}},
+                "key": "properties.nam"},"as":"geo"
+      }
+    ],
+    "params": [{"name": "click","select": {"type": "point", "encodings": ["shape","color"]}}],
+    "repeat":{"row":yfieldline},
+    "spec":{
+      "width": viswidth,
+      "height": visheight,
+      "mark": {"type": "geoshape"},
+      "projection": {"type": "mercator"},
+      "encoding": {
+        "shape": {"field": "geo","type":"geojson"},
+        "color": {"condition": {"param": "click","field": {"repeat":"row"},"type":"quantitative"},"value": "lightgray"},
+        "facet":{"field":"date","timeUnit":xtypename,"title":""},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":{"repeat":"row"},"type":"quantitative"}]
+      },
+    },
+    "resolve": {"scale": {"color": "independent"}},
+    "config": {"view": {"stroke": "transparent"}}
+  };
+  vegaEmbed('#vis', visualmap);
+}
+function visualizeArcyear(){
+  if (flag===1){
+      var visualarc={
+        "data": {"url":dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                      {"fold": yfieldline}],
+        "params": [{"name": "click","select": {"type": "point","encodings":["strokeOpacity","color"]}}],
+        "facet":{"field":"name","type":"nominal","title":""},
+        "columns":viscolumns,
+        "spec":{
+          "mark": {"type":"arc"},
+          "encoding": {
+            "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+            "column": {"field": "key", "type": "nominal","title":""},
+            "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+            "strokeOpacity": {"field": "name", "type": "nominal","legend":null},
+            "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nomianl","title":"data"},{"field":"value","type":"quantitative"}]
+          },
+          "view": {"stroke": "transparent"}
+        }
+      };
+  }else{
+    var visualarc={
+      "data": {"url":dataurl},
+      "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                    {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                    {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","strokeOpacity"]}}],
+      "facet":{"field":"date","timeUnit":xtypename,"type":"nominal","title":""},
+      "columns": viscolumns,
+      "spec":{
+        "width": viswidth,
+        "height": visheight,
+        "mark": {"type":"arc"},
+        "encoding": {
+          "theta": {"field": "value","type":"quantitative","aggregate":"sum","stack": "normalize"},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"}},"value": "lightgray"},
+          "strokeOpacity": {"field": "date", "timeUnit": xtypename,"legend":null},
+          "facet":{"field":"key","type":"nominal","title":""},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "view": {"stroke": "transparent"}
+      },
+      };
+  }
+  vegaEmbed('#vis', visualarc);
+}
+function visualizeAreayear(){
+    if (flag===0){
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"timeUnit": xtypename, "field": "date","title":""},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum", "axis": null},
+          "color": {"condition": {"param": "click","field":"name","type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}}
+      }
+    }else{
+      var visualarea={
+        "width": viswidth,
+        "height": visheight,
+        "data": {"url": dataurl},
+        "transform": [{"filter": {"field": "name", "oneOf":transformequal}},
+                      {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                      {"fold":yfieldline}],
+        "params": [{"name": "click","select": {"type": "point", "encodings": ["color"]}}],
+        "mark": {"type":"area"},
+        "encoding": {
+          "x": {"field": "name","type":"nominal","title":null},
+          "y": {"field": "value","type":"quantitative","stack": "normalize","aggregate": "sum","axis":null},
+          "color": {"condition": {"param": "click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"},"legend":{"symbolLimit":502,"columns":5}},"value": "lightgray"},
+          "facet":{"field":"key","type":"nominal","title":"","columns":viscolumns},
+          "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+        },
+        "resolve": {"scale": {"x": "independent"}},
+        "config": {"view": {"stroke": "transparent"},"scale": {"pointPadding": 0}}
+      };
+    }
+    vegaEmbed('#vis', visualarea);
+  }
+function visualizePointyear(){
+  if (flag===0){
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"name","tyoe":"nominal","title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color":{"condition":{"param":"click","field":"date","timeUnit":xtypename,"type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key","type": "nominal"},
+        "tooltip":[{"field":"date","timeUnit":xtypename},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      },
+    };
+  }else{
+    var visualpoint={
+      "data":{"url":dataurl},
+      "transform":[{"filter": {"field": "name", "oneOf":transformequal}},
+                   {"filter":{"field":"date","timeUnit":xtypename,"range":[{"year":startedit[0]},{"year":endedit[0]}]}},
+                   {"fold":yfieldline}],
+      "params": [{"name": "click","select": {"type": "point", "encodings": ["color","x"]}}],
+      "width":viswidth,
+      "height":visheight,
+      "mark":{"type":"point"},
+      "encoding":{
+        "x":{"field":"date","timeUnit":xtypename,"title":""},
+        "y":{"field":"value","type":"quantitative","aggregate":"sum","title":"Number of people"},
+        "color": {"condition":{"param":"click","field": "name","type":"nominal","scale": {"scheme": "category20"}},"value":"lightgray"},
+        "size":{"condition":{"param":"click","value":150},"value":50},
+        "shape": {"field": "key", "type": "nominal","title":"data"},
+        "tooltip":[{"field":"name","type":"nominal"},{"field":"key","type":"nominal","title":"data"},{"field":"value","type":"quantitative"}]
+      }
+    };
+  }
+  vegaEmbed('#vis', visualpoint);
 }

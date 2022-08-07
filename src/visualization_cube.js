@@ -733,6 +733,13 @@ function ADUADDComLabel(){
 function AdRdLabel(){
   sdlabel=yfieldline;
 }
+function spindeletecoordinate(){
+  if(flag==0){
+    ViewQty++;
+  }else{
+    ViewQty--;
+  }
+}
 function transitioncoordinate(){
   if(flag===0){
     if(type===0){
