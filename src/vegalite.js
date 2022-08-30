@@ -13,7 +13,8 @@ function St(){
   AreaJoinArray();
 }
 function set(selectdatastr){
-    dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    // dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    dataurl="https://dl.dropboxusercontent.com/s/7rddxt74he0vg39/DatasetMonth.csv";
     MainArea=["Japan"];
     xtypename="monthyear";
     MainData=[selectdatastr];
@@ -36,11 +37,14 @@ function set(selectdatastr){
 }
 function Setdata(){
   if(xtypename==="datemonthyear"){
-    dataurl="https://dl.dropboxusercontent.com/s/db18rmizllgguzg/dataset4.csv";
+    // dataurl="https://dl.dropboxusercontent.com/s/db18rmizllgguzg/dataset4.csv";
+    dataurl="https://dl.dropboxusercontent.com/s/8s8nq0zo8y26dno/DatasetDate.csv";
   }else if(xtypename==="monthyear"){
-    dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    // dataurl="https://dl.dropboxusercontent.com/s/g7pxrukinj2nvnf/dataset242.csv";
+    dataurl="https://dl.dropboxusercontent.com/s/7rddxt74he0vg39/DatasetMonth.csv";
   }else if(xtypename==="year"){
-    dataurl="https://dl.dropboxusercontent.com/s/fs2pyjqwqf81sfd/dataset232.csv";
+    // dataurl="https://dl.dropboxusercontent.com/s/fs2pyjqwqf81sfd/dataset232.csv";
+    dataurl="https://dl.dropboxusercontent.com/s/vamozohb6rhuu7v/DatasetYear.csv";
   }
 }
 function TDU(){
