@@ -208,6 +208,9 @@ function setComparedataselect(){
 
   cdselect2.options.length = 0; // 選択肢の数がそれぞれに異なる場合、これが重要
 
+  dataset=[]
+  dataset_ja=[]
+
   for(let i=0;i<dset.length;i++){
     if(dset[i]!=cdselect1.options[cdselect1.selectedIndex].value){
       dataset.push(dset[i]);
