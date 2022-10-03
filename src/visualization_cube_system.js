@@ -393,9 +393,9 @@ function Re(){
   document.getElementById("selectdata").style.visibility="visible"
   document.getElementById("help_icon").style.visibility="visible"
 
-  document.getElementById("startmonth").style.visibility="hidden";  ////////////////////////////////////////////////////////
-  document.getElementById("to").style.visibility="hidden";  ////////////////////////////////////////////////////////
-  document.getElementById("endmonth").style.visibility="hidden";  ////////////////////////////////////////////////////////
+  document.getElementById("startmonth").style.visibility="visible";  ////////////////////////////////////////////////////////
+  document.getElementById("to").style.visibility="visible";  ////////////////////////////////////////////////////////
+  document.getElementById("endmonth").style.visibility="visible";  ////////////////////////////////////////////////////////
 
   document.getElementById("cube").style.visibility="hidden"
 }
