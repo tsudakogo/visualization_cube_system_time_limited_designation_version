@@ -212,6 +212,17 @@ function DrawAxis(){
   });
 }
 function Create(){
+  if(flag==0){
+    CameraXcoordinate=0;
+    CameraZcoordinate=16;
+    Camera3Xcoordinate=0
+    Camera3Zcoordinate=55;
+  }else{
+    CameraXcoordinate=16;
+    CameraZcoordinate=0;
+    Camera3Xcoordinate=55;
+    Camera3Zcoordinate=0;
+  }
   canvasElement1 = document.getElementById('myCanvas');
   renderer1 = new THREE.WebGLRenderer({canvas: canvasElement1,alpha: true});
   renderer1.setPixelRatio(window.devicePixelRatio);
@@ -219,7 +230,7 @@ function Create(){
   renderer1.setClearColor( 0xffffff, 0 );
   scene1 = new THREE.Scene();
   camera1 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera1.position.set(10, 10, 10);
+  camera1.position.set(CameraXcoordinate, 10, CameraZcoordinate);
   camera1.lookAt(new THREE.Vector3(0, 0, 0));
   controls1 = new THREE.OrbitControls(camera1, canvasElement1);
 
@@ -230,7 +241,7 @@ function Create(){
   renderer2.setClearColor( 0xffffff, 0 );
   scene2 = new THREE.Scene();
   camera2 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera2.position.set(10, 10, 10);
+  camera2.position.set(CameraXcoordinate, 10, CameraZcoordinate);
   camera2.lookAt(new THREE.Vector3(0, 0, 0));
   controls2 = new THREE.OrbitControls(camera2, canvasElement2);
 
@@ -241,7 +252,7 @@ function Create(){
   renderer3.setClearColor( 0xffffff, 0 );
   scene3 = new THREE.Scene();
   camera3 = new THREE.PerspectiveCamera(40, cubewidthbig / cubeheightbig,1,1000);
-  camera3.position.set(55, 55, 55);
+  camera3.position.set(Camera3Xcoordinate, 55, Camera3Zcoordinate);
   camera3.lookAt(new THREE.Vector3(0, 0, 0));
   controls3 = new THREE.OrbitControls(camera3, canvasElement3);
 
@@ -252,7 +263,7 @@ function Create(){
   renderer4.setClearColor( 0xffffff, 0 );
   scene4 = new THREE.Scene();
   camera4 = new THREE.PerspectiveCamera(40, cubewidthbig / cubeheightbig,1,1000);
-  camera4.position.set(55, 55, 55);
+  camera4.position.set(Camera3Xcoordinate, 55, Camera3Zcoordinate);
   camera4.lookAt(new THREE.Vector3(0, 0, 0));
   controls4 = new THREE.OrbitControls(camera4, canvasElement4);
 
