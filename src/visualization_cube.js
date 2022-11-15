@@ -213,13 +213,13 @@ function DrawAxis(){
 }
 function Create(){
   if(flag==0){
-    CameraXcoordinate=0;
+    CameraXcoordinate=3;
     CameraZcoordinate=16;
     Camera3Xcoordinate=0
     Camera3Zcoordinate=55;
   }else{
     CameraXcoordinate=16;
-    CameraZcoordinate=0;
+    CameraZcoordinate=3;
     Camera3Xcoordinate=55;
     Camera3Zcoordinate=0;
   }
@@ -230,7 +230,7 @@ function Create(){
   renderer1.setClearColor( 0xffffff, 0 );
   scene1 = new THREE.Scene();
   camera1 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera1.position.set(CameraXcoordinate, 10, CameraZcoordinate);
+  camera1.position.set(CameraXcoordinate, 5, CameraZcoordinate);
   camera1.lookAt(new THREE.Vector3(0, 0, 0));
   controls1 = new THREE.OrbitControls(camera1, canvasElement1);
 
@@ -241,7 +241,7 @@ function Create(){
   renderer2.setClearColor( 0xffffff, 0 );
   scene2 = new THREE.Scene();
   camera2 = new THREE.PerspectiveCamera(45, cubewidth / cubeheight,1,1000);
-  camera2.position.set(CameraXcoordinate, 10, CameraZcoordinate);
+  camera2.position.set(CameraXcoordinate, 5, CameraZcoordinate);
   camera2.lookAt(new THREE.Vector3(0, 0, 0));
   controls2 = new THREE.OrbitControls(camera2, canvasElement2);
 
