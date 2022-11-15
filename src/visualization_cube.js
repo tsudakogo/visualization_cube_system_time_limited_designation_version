@@ -150,7 +150,7 @@ function DrawAxis(){
     var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
     var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
     var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
+    zaxistextMesh.position.set(-1.5,1,6);
     zaxistextMesh.quaternion.copy( camera1.quaternion );
     scene1.add(zaxistextMesh);
 
@@ -169,7 +169,7 @@ function DrawAxis(){
     var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
     var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
     var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
+    zaxistextMesh.position.set(-1.5,1,6);
     zaxistextMesh.quaternion.copy( camera2.quaternion );
     scene2.add(zaxistextMesh);
 
@@ -188,7 +188,7 @@ function DrawAxis(){
     var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
     var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
     var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
+    zaxistextMesh.position.set(-1.5,1,6);
     zaxistextMesh.quaternion.copy( camera3.quaternion );
     scene3.add(zaxistextMesh);
     var xaxistextGeometry = new THREE.TextGeometry("Area", {font: font1,size: 0.5,curveSegments: 20,height: 0});
@@ -206,7 +206,7 @@ function DrawAxis(){
     var zaxistextGeometry = new THREE.TextGeometry("Time", {font: font1,size: 0.5,curveSegments: 20,height: 0});
     var zaxismaterials = new THREE.MeshBasicMaterial( { color: TimeLabelcolor } );
     var zaxistextMesh = new THREE.Mesh(zaxistextGeometry, zaxismaterials);
-    zaxistextMesh.position.set(0,1,6);
+    zaxistextMesh.position.set(-1.5,1,6);
     zaxistextMesh.quaternion.copy( camera4.quaternion );
     scene4.add(zaxistextMesh);
   });
