@@ -8,7 +8,7 @@ select{width:105px; height:20px; z-index:100}
 #cube{position:fixed; right:50px; bottom:0; z-index:50;border: 3px groove #d3d3d3;}
 
 
-#myCanvas{position:absolute; left:255px; top:50px; z-index:50}
+#myCanvas{position:absolute; left:255px; top:70px; z-index:50}
 
 #Tdrillup{position: absolute; left:45px; top:195px}
 #Tdrilldown{position: absolute; left:150px; top:195px}
@@ -23,16 +23,16 @@ select{width:105px; height:20px; z-index:100}
 #Transition{position: absolute; left:537px; top:50px}
 
 
-#myCanvas2{position:absolute; left:1180px; top:50px; z-index:50}
+#myCanvas2{position:absolute; left:1180px; top:70px; z-index:50}
 
 #Tdrillup2{position: absolute; left:970px; top:195px}
 #Tdrilldown2{position: absolute; left:1075px; top:195px}
 
-#Adrill2{position: absolute; left:1480px; top:195px}
-#Adrillup2{position: absolute; left:1585px; top:195px}
+#Adrill2{position: absolute; left:1585px; top:195px}
+#Adrillup2{position: absolute; left:1480px; top:195px}
 #Adrilldown2{position: absolute; left:1690px; top:195px}
-#compareselect4{position: absolute; left:1480px; top:220px}
-#compare2{position: absolute; left:1585px; top:220px}
+#compareselect4{position: absolute; left:1585px; top:220px}
+#compare2{position: absolute; left:1690px; top:220px}
 
 #comparedata{position: absolute; left:1315px; top:35px}
 #Adddata{position: absolute; left:1422px; top:35px}
