@@ -28,12 +28,10 @@ function tick2(){
 }
 
 function tick3(){ //////// カメラをマウスでコントロールするために必要なもの
-  camera3.lookAt(new THREE.Vector3(-15, 0, -15));
   renderer3.render(scene3, camera3);
   requestAnimationFrame(tick3);
 }
 function tick4(){ //////// カメラをマウスでコントロールするために必要なもの
-    camera4.lookAt(new THREE.Vector3(-15, 0, -15));
   renderer4.render(scene4, camera4);
   requestAnimationFrame(tick4);
 }
@@ -215,13 +213,13 @@ function Create(){
   if(flag==0){
     CameraXcoordinate=3;
     CameraZcoordinate=16;
-    Camera3Xcoordinate=0
+    Camera3Xcoordinate=6;
     Camera3Zcoordinate=55;
   }else{
     CameraXcoordinate=16;
     CameraZcoordinate=3;
     Camera3Xcoordinate=55;
-    Camera3Zcoordinate=0;
+    Camera3Zcoordinate=6;
   }
   canvasElement1 = document.getElementById('myCanvas');
   renderer1 = new THREE.WebGLRenderer({canvas: canvasElement1,alpha: true});
